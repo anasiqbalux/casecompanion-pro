@@ -25,6 +25,14 @@ const CaseInitiation = () => {
   const [showReview, setShowReview] = useState(false);
   const [briefDescription, setBriefDescription] = useState("");
   const [approvalDescription, setApprovalDescription] = useState("");
+  const [attachments, setAttachments] = useState<Array<{
+    id: string;
+    documentName: string;
+    attachmentBrief: string;
+    fileName: string;
+    uploadedBy: string;
+    file: File;
+  }>>([]);
   const [caseData, setCaseData] = useState({
     dateInitiated: "",
     externalReference: "",
@@ -62,6 +70,45 @@ const CaseInitiation = () => {
     toast.success(`Case ${action}ed successfully!`, {
       description: `The case has been ${action}ed and the relevant parties have been notified.`,
     });
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files) {
+      Array.from(files).forEach((file) => {
+        const newAttachment = {
+          id: Math.random().toString(36).substr(2, 9),
+          documentName: file.name.split('.')[0],
+          attachmentBrief: "",
+          fileName: file.name,
+          uploadedBy: "Current User",
+          file: file,
+        };
+        setAttachments(prev => [...prev, newAttachment]);
+      });
+      toast.success("Files uploaded successfully!");
+    }
+  };
+
+  const handleDeleteAttachment = (id: string) => {
+    setAttachments(prev => prev.filter(att => att.id !== id));
+    toast.success("Attachment deleted");
+  };
+
+  const handleDeleteAllAttachments = () => {
+    setAttachments([]);
+    toast.success("All attachments deleted");
+  };
+
+  const handlePreviewAttachment = (attachment: typeof attachments[0]) => {
+    const url = URL.createObjectURL(attachment.file);
+    window.open(url, '_blank');
+  };
+
+  const updateAttachmentField = (id: string, field: string, value: string) => {
+    setAttachments(prev => prev.map(att => 
+      att.id === id ? { ...att, [field]: value } : att
+    ));
   };
 
   const handleSubmit = () => {
@@ -321,19 +368,104 @@ const CaseInitiation = () => {
               </TabsContent>
 
               <TabsContent value="documentation" className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="documents">Document References</Label>
-                  <Textarea
-                    id="documents"
-                    placeholder="List all relevant documents, evidence, and files..."
-                    className="min-h-32"
-                    value={caseData.documents}
-                    onChange={(e) => handleInputChange("documents", e.target.value)}
-                  />
-                </div>
-                <div className="p-4 border-2 border-dashed rounded-lg text-center">
-                  <p className="text-sm text-muted-foreground mb-2">Drag and drop files here, or click to browse</p>
-                  <Button variant="outline" size="sm">Browse Files</Button>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center">
+                    <Label>Upload Attachments</Label>
+                    {attachments.length > 0 && (
+                      <Button 
+                        type="button"
+                        variant="destructive" 
+                        size="sm"
+                        onClick={handleDeleteAllAttachments}
+                      >
+                        Delete All
+                      </Button>
+                    )}
+                  </div>
+                  <div className="p-6 border-2 border-dashed rounded-lg text-center">
+                    <p className="text-sm text-muted-foreground mb-2">Drag and drop files here, or click to browse</p>
+                    <Input
+                      type="file"
+                      multiple
+                      onChange={handleFileUpload}
+                      className="hidden"
+                      id="file-upload"
+                    />
+                    <Button 
+                      type="button"
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => document.getElementById('file-upload')?.click()}
+                    >
+                      Browse Files
+                    </Button>
+                  </div>
+
+                  {attachments.length > 0 && (
+                    <div className="space-y-3">
+                      <Label>Uploaded Documents</Label>
+                      {attachments.map((attachment) => (
+                        <Card key={attachment.id}>
+                          <CardContent className="pt-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                              <div className="space-y-2">
+                                <Label htmlFor={`doc-name-${attachment.id}`}>Document Name</Label>
+                                <Input
+                                  id={`doc-name-${attachment.id}`}
+                                  value={attachment.documentName}
+                                  onChange={(e) => updateAttachmentField(attachment.id, 'documentName', e.target.value)}
+                                  placeholder="Enter document name"
+                                />
+                              </div>
+                              <div className="space-y-2">
+                                <Label htmlFor={`uploaded-by-${attachment.id}`}>Uploaded By</Label>
+                                <Input
+                                  id={`uploaded-by-${attachment.id}`}
+                                  value={attachment.uploadedBy}
+                                  onChange={(e) => updateAttachmentField(attachment.id, 'uploadedBy', e.target.value)}
+                                  placeholder="Enter uploader name"
+                                />
+                              </div>
+                            </div>
+                            <div className="space-y-2 mb-4">
+                              <Label htmlFor={`attachment-brief-${attachment.id}`}>Attachment Brief</Label>
+                              <Textarea
+                                id={`attachment-brief-${attachment.id}`}
+                                value={attachment.attachmentBrief}
+                                onChange={(e) => updateAttachmentField(attachment.id, 'attachmentBrief', e.target.value)}
+                                placeholder="Enter brief description"
+                                className="min-h-20"
+                              />
+                            </div>
+                            <div className="flex items-center justify-between pt-4 border-t">
+                              <div className="text-sm text-muted-foreground">
+                                <span className="font-medium">File: </span>
+                                {attachment.fileName}
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handlePreviewAttachment(attachment)}
+                                >
+                                  Preview
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => handleDeleteAttachment(attachment.id)}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </TabsContent>
 
