@@ -15,18 +15,30 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import CaseReviewModal from "@/components/CaseReviewModal";
 import { toast } from "sonner";
+import ReactQuill from "react-quill";
+import "react-quill/dist/quill.snow.css";
 
 const CaseInitiation = () => {
   const navigate = useNavigate();
-  const [date, setDate] = useState<Date>();
+  const [dateInitiated, setDateInitiated] = useState<Date>();
+  const [resolutionDate, setResolutionDate] = useState<Date>();
   const [showReview, setShowReview] = useState(false);
+  const [briefDescription, setBriefDescription] = useState("");
   const [caseData, setCaseData] = useState({
-    caseTitle: "",
-    caseNumber: "",
-    caseType: "",
-    priority: "",
-    description: "",
+    dateInitiated: "",
+    externalReference: "",
+    group: "",
+    division: "",
+    referenceNumber: "",
+    externalAgency: "",
+    unit: "",
+    initiatedBy: "",
+    subReference: "",
+    unitDetails: "",
+    serviceType: "",
+    approvalBy: "",
     assignedTo: "",
+    caseSubject: "",
     approvalStatus: "Pending",
     documents: "",
     resolution: "",
@@ -48,7 +60,7 @@ const CaseInitiation = () => {
   const handleSubmit = () => {
     setShowReview(false);
     toast.success("Case submitted successfully!", {
-      description: `Case ${caseData.caseNumber} has been created and is now pending review.`,
+      description: `Case ${caseData.referenceNumber} has been created and is now pending review.`,
     });
     setTimeout(() => {
       navigate("/");
@@ -81,63 +93,175 @@ const CaseInitiation = () => {
               </TabsList>
 
               <TabsContent value="details" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="caseTitle">Case Title</Label>
+                    <Label>Date Initiated</Label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          className={cn(
+                            "w-full justify-start text-left font-normal",
+                            !dateInitiated && "text-muted-foreground"
+                          )}
+                        >
+                          <CalendarIcon className="mr-2 h-4 w-4" />
+                          {dateInitiated ? format(dateInitiated, "PPP") : <span>Pick a date</span>}
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={dateInitiated}
+                          onSelect={setDateInitiated}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="externalReference">External Reference</Label>
                     <Input
-                      id="caseTitle"
-                      placeholder="Enter case title"
-                      value={caseData.caseTitle}
-                      onChange={(e) => handleInputChange("caseTitle", e.target.value)}
+                      id="externalReference"
+                      placeholder="Enter external reference"
+                      value={caseData.externalReference}
+                      onChange={(e) => handleInputChange("externalReference", e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="caseNumber">Case Number</Label>
+                    <Label htmlFor="group">Group</Label>
                     <Input
-                      id="caseNumber"
-                      placeholder="e.g., CAS-2024-001"
-                      value={caseData.caseNumber}
-                      onChange={(e) => handleInputChange("caseNumber", e.target.value)}
+                      id="group"
+                      placeholder="Enter group"
+                      value={caseData.group}
+                      onChange={(e) => handleInputChange("group", e.target.value)}
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="caseType">Case Type</Label>
-                    <Select value={caseData.caseType} onValueChange={(value) => handleInputChange("caseType", value)}>
+                    <Label htmlFor="division">Division</Label>
+                    <Input
+                      id="division"
+                      placeholder="Enter division"
+                      value={caseData.division}
+                      onChange={(e) => handleInputChange("division", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="referenceNumber">Reference Number</Label>
+                    <Input
+                      id="referenceNumber"
+                      placeholder="Enter reference number"
+                      value={caseData.referenceNumber}
+                      onChange={(e) => handleInputChange("referenceNumber", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="externalAgency">External Agency</Label>
+                    <Select value={caseData.externalAgency} onValueChange={(value) => handleInputChange("externalAgency", value)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select case type" />
+                        <SelectValue placeholder="Select agency" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="civil">Civil</SelectItem>
-                        <SelectItem value="criminal">Criminal</SelectItem>
-                        <SelectItem value="corporate">Corporate</SelectItem>
-                        <SelectItem value="family">Family</SelectItem>
-                        <SelectItem value="property">Property</SelectItem>
+                        <SelectItem value="agency1">Agency 1</SelectItem>
+                        <SelectItem value="agency2">Agency 2</SelectItem>
+                        <SelectItem value="agency3">Agency 3</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="priority">Priority</Label>
-                    <Select value={caseData.priority} onValueChange={(value) => handleInputChange("priority", value)}>
+                    <Label htmlFor="unit">Unit</Label>
+                    <Input
+                      id="unit"
+                      placeholder="Enter unit"
+                      value={caseData.unit}
+                      onChange={(e) => handleInputChange("unit", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="initiatedBy">Initiated By</Label>
+                    <Input
+                      id="initiatedBy"
+                      placeholder="Enter initiator name"
+                      value={caseData.initiatedBy}
+                      onChange={(e) => handleInputChange("initiatedBy", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="subReference">Sub Reference</Label>
+                    <Input
+                      id="subReference"
+                      placeholder="Enter sub reference"
+                      value={caseData.subReference}
+                      onChange={(e) => handleInputChange("subReference", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="unitDetails">Unit Details</Label>
+                    <Input
+                      id="unitDetails"
+                      placeholder="Enter unit details"
+                      value={caseData.unitDetails}
+                      onChange={(e) => handleInputChange("unitDetails", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="serviceType">Service Type</Label>
+                    <Input
+                      id="serviceType"
+                      placeholder="Enter service type"
+                      value={caseData.serviceType}
+                      onChange={(e) => handleInputChange("serviceType", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="approvalBy">Approval By</Label>
+                    <Input
+                      id="approvalBy"
+                      placeholder="Enter approver name"
+                      value={caseData.approvalBy}
+                      onChange={(e) => handleInputChange("approvalBy", e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="assignedTo">Assigned To</Label>
+                    <Select value={caseData.assignedTo} onValueChange={(value) => handleInputChange("assignedTo", value)}>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
+                        <SelectValue placeholder="Select attorney" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="low">Low</SelectItem>
-                        <SelectItem value="medium">Medium</SelectItem>
-                        <SelectItem value="high">High</SelectItem>
-                        <SelectItem value="urgent">Urgent</SelectItem>
+                        <SelectItem value="john-smith">John Smith</SelectItem>
+                        <SelectItem value="jane-doe">Jane Doe</SelectItem>
+                        <SelectItem value="robert-johnson">Robert Johnson</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="description">Case Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Provide detailed case description..."
-                    className="min-h-32"
-                    value={caseData.description}
-                    onChange={(e) => handleInputChange("description", e.target.value)}
+                  <Label htmlFor="caseSubject">Case Subject</Label>
+                  <Input
+                    id="caseSubject"
+                    placeholder="Enter case subject"
+                    value={caseData.caseSubject}
+                    onChange={(e) => handleInputChange("caseSubject", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <Label>Brief Description</Label>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setBriefDescription("")}
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  <ReactQuill
+                    theme="snow"
+                    value={briefDescription}
+                    onChange={setBriefDescription}
+                    className="bg-background"
                   />
                 </div>
               </TabsContent>
@@ -214,18 +338,18 @@ const CaseInitiation = () => {
                           variant="outline"
                           className={cn(
                             "w-full justify-start text-left font-normal",
-                            !date && "text-muted-foreground"
+                            !resolutionDate && "text-muted-foreground"
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? format(date, "PPP") : <span>Pick a date</span>}
+                          {resolutionDate ? format(resolutionDate, "PPP") : <span>Pick a date</span>}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
                         <Calendar
                           mode="single"
-                          selected={date}
-                          onSelect={setDate}
+                          selected={resolutionDate}
+                          onSelect={setResolutionDate}
                           initialFocus
                         />
                       </PopoverContent>
