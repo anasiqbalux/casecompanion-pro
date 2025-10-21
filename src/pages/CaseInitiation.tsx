@@ -24,6 +24,7 @@ const CaseInitiation = () => {
   const [resolutionDate, setResolutionDate] = useState<Date>();
   const [showReview, setShowReview] = useState(false);
   const [briefDescription, setBriefDescription] = useState("");
+  const [approvalDescription, setApprovalDescription] = useState("");
   const [caseData, setCaseData] = useState({
     dateInitiated: "",
     externalReference: "",
@@ -55,6 +56,12 @@ const CaseInitiation = () => {
 
   const handleReview = () => {
     setShowReview(true);
+  };
+
+  const handleApprovalAction = (action: "hold" | "disapprove" | "process") => {
+    toast.success(`Case ${action}ed successfully!`, {
+      description: `The case has been ${action}ed and the relevant parties have been notified.`,
+    });
   };
 
   const handleSubmit = () => {
@@ -267,37 +274,49 @@ const CaseInitiation = () => {
               </TabsContent>
 
               <TabsContent value="approval" className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="assignedTo">Assigned To</Label>
-                    <Select value={caseData.assignedTo} onValueChange={(value) => handleInputChange("assignedTo", value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select attorney" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="john-smith">John Smith</SelectItem>
-                        <SelectItem value="jane-doe">Jane Doe</SelectItem>
-                        <SelectItem value="robert-johnson">Robert Johnson</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="approvalStatus">Approval Status</Label>
-                    <Input
-                      id="approvalStatus"
-                      value="Pending"
-                      disabled
-                      className="bg-muted"
-                    />
-                  </div>
-                </div>
                 <div className="space-y-2">
-                  <Label htmlFor="approvalNotes">Approval Notes</Label>
-                  <Textarea
-                    id="approvalNotes"
-                    placeholder="Add any notes for approval..."
-                    className="min-h-32"
+                  <div className="flex justify-between items-center">
+                    <Label>Brief Description</Label>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setApprovalDescription("")}
+                    >
+                      Clear
+                    </Button>
+                  </div>
+                  <ReactQuill
+                    theme="snow"
+                    value={approvalDescription}
+                    onChange={setApprovalDescription}
+                    className="bg-background"
                   />
+                </div>
+                <div className="flex gap-4 pt-4">
+                  <Button 
+                    type="button"
+                    variant="outline" 
+                    onClick={() => handleApprovalAction("hold")}
+                    className="flex-1"
+                  >
+                    Hold
+                  </Button>
+                  <Button 
+                    type="button"
+                    variant="destructive" 
+                    onClick={() => handleApprovalAction("disapprove")}
+                    className="flex-1"
+                  >
+                    Disapprove
+                  </Button>
+                  <Button 
+                    type="button"
+                    onClick={() => handleApprovalAction("process")}
+                    className="flex-1"
+                  >
+                    Process
+                  </Button>
                 </div>
               </TabsContent>
 
