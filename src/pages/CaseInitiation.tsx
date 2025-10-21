@@ -370,95 +370,115 @@ const CaseInitiation = () => {
               <TabsContent value="documentation" className="space-y-4">
                 <div className="space-y-4">
                   <div className="flex justify-between items-center">
-                    <Label>Upload Attachments</Label>
-                    {attachments.length > 0 && (
+                    <Label>Documents</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="file"
+                        multiple
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        id="file-upload"
+                      />
                       <Button 
                         type="button"
-                        variant="destructive" 
-                        size="sm"
-                        onClick={handleDeleteAllAttachments}
+                        onClick={() => document.getElementById('file-upload')?.click()}
                       >
-                        Delete All
+                        Add Document
                       </Button>
-                    )}
-                  </div>
-                  <div className="p-6 border-2 border-dashed rounded-lg text-center">
-                    <p className="text-sm text-muted-foreground mb-2">Drag and drop files here, or click to browse</p>
-                    <Input
-                      type="file"
-                      multiple
-                      onChange={handleFileUpload}
-                      className="hidden"
-                      id="file-upload"
-                    />
-                    <Button 
-                      type="button"
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => document.getElementById('file-upload')?.click()}
-                    >
-                      Browse Files
-                    </Button>
+                      {attachments.length > 0 && (
+                        <Button 
+                          type="button"
+                          variant="destructive"
+                          onClick={handleDeleteAllAttachments}
+                        >
+                          Delete All
+                        </Button>
+                      )}
+                    </div>
                   </div>
 
-                  {attachments.length > 0 && (
+                  {attachments.length === 0 ? (
+                    <div className="p-8 border-2 border-dashed rounded-lg text-center">
+                      <p className="text-muted-foreground mb-4">No documents uploaded yet</p>
+                      <Button 
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById('file-upload')?.click()}
+                      >
+                        Upload First Document
+                      </Button>
+                    </div>
+                  ) : (
                     <div className="space-y-3">
-                      <Label>Uploaded Documents</Label>
                       {attachments.map((attachment) => (
                         <Card key={attachment.id}>
-                          <CardContent className="pt-6">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                              <div className="space-y-2">
-                                <Label htmlFor={`doc-name-${attachment.id}`}>Document Name</Label>
-                                <Input
-                                  id={`doc-name-${attachment.id}`}
-                                  value={attachment.documentName}
-                                  onChange={(e) => updateAttachmentField(attachment.id, 'documentName', e.target.value)}
-                                  placeholder="Enter document name"
-                                />
+                          <CardContent className="p-4">
+                            <div className="flex gap-4">
+                              <div className="flex-shrink-0 w-16 h-16 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
+                                {attachment.file.type.startsWith('image/') ? (
+                                  <img 
+                                    src={URL.createObjectURL(attachment.file)} 
+                                    alt={attachment.documentName}
+                                    className="w-full h-full object-cover"
+                                  />
+                                ) : (
+                                  <div className="text-muted-foreground text-xs text-center p-2">
+                                    {attachment.fileName.split('.').pop()?.toUpperCase()}
+                                  </div>
+                                )}
                               </div>
-                              <div className="space-y-2">
-                                <Label htmlFor={`uploaded-by-${attachment.id}`}>Uploaded By</Label>
-                                <Input
-                                  id={`uploaded-by-${attachment.id}`}
-                                  value={attachment.uploadedBy}
-                                  onChange={(e) => updateAttachmentField(attachment.id, 'uploadedBy', e.target.value)}
-                                  placeholder="Enter uploader name"
-                                />
-                              </div>
-                            </div>
-                            <div className="space-y-2 mb-4">
-                              <Label htmlFor={`attachment-brief-${attachment.id}`}>Attachment Brief</Label>
-                              <Textarea
-                                id={`attachment-brief-${attachment.id}`}
-                                value={attachment.attachmentBrief}
-                                onChange={(e) => updateAttachmentField(attachment.id, 'attachmentBrief', e.target.value)}
-                                placeholder="Enter brief description"
-                                className="min-h-20"
-                              />
-                            </div>
-                            <div className="flex items-center justify-between pt-4 border-t">
-                              <div className="text-sm text-muted-foreground">
-                                <span className="font-medium">File: </span>
-                                {attachment.fileName}
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => handlePreviewAttachment(attachment)}
-                                >
-                                  Preview
-                                </Button>
-                                <Button
-                                  type="button"
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => handleDeleteAttachment(attachment.id)}
-                                >
-                                  Delete
-                                </Button>
+                              <div className="flex-1 min-w-0">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-2">
+                                  <div>
+                                    <Label className="text-xs text-muted-foreground">Document Name</Label>
+                                    <Input
+                                      value={attachment.documentName}
+                                      onChange={(e) => updateAttachmentField(attachment.id, 'documentName', e.target.value)}
+                                      placeholder="Enter document name"
+                                      className="h-8 mt-1"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs text-muted-foreground">Uploaded By</Label>
+                                    <Input
+                                      value={attachment.uploadedBy}
+                                      onChange={(e) => updateAttachmentField(attachment.id, 'uploadedBy', e.target.value)}
+                                      placeholder="Enter uploader name"
+                                      className="h-8 mt-1"
+                                    />
+                                  </div>
+                                  <div>
+                                    <Label className="text-xs text-muted-foreground">File</Label>
+                                    <p className="text-sm truncate mt-1">{attachment.fileName}</p>
+                                  </div>
+                                </div>
+                                <div className="mb-2">
+                                  <Label className="text-xs text-muted-foreground">Attachment Brief</Label>
+                                  <Textarea
+                                    value={attachment.attachmentBrief}
+                                    onChange={(e) => updateAttachmentField(attachment.id, 'attachmentBrief', e.target.value)}
+                                    placeholder="Enter brief description"
+                                    className="min-h-16 mt-1"
+                                  />
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => handlePreviewAttachment(attachment)}
+                                  >
+                                    Preview
+                                  </Button>
+                                  <Button
+                                    type="button"
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => handleDeleteAttachment(attachment.id)}
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
                               </div>
                             </div>
                           </CardContent>
