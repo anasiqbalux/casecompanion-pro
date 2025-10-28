@@ -1,9 +1,12 @@
 import { FileText, CheckCircle, Clock, AlertCircle, TrendingUp } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
+  
   const recentCases = [
     { id: "CAS-2024-001", title: "Contract Dispute - ABC Corp", status: "In Progress", date: "2024-01-15" },
     { id: "CAS-2024-002", title: "Employment Case - John Doe", status: "Pending Review", date: "2024-01-14" },
@@ -22,33 +25,41 @@ const Dashboard = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <StatCard
-            title="Total Cases"
-            value="48"
-            icon={FileText}
-            trend="+12% from last month"
-            trendUp={true}
-          />
-          <StatCard
-            title="Approved Cases"
-            value="32"
-            icon={CheckCircle}
-            trend="+8% from last month"
-            trendUp={true}
-          />
-          <StatCard
-            title="Pending Review"
-            value="12"
-            icon={Clock}
-            trend="-5% from last month"
-            trendUp={false}
-          />
-          <StatCard
-            title="Urgent Cases"
-            value="4"
-            icon={AlertCircle}
-            trend="2 due this week"
-          />
+          <div onClick={() => navigate("/cases?filter=total")} className="cursor-pointer">
+            <StatCard
+              title="Total Cases"
+              value="48"
+              icon={FileText}
+              trend="+12% from last month"
+              trendUp={true}
+            />
+          </div>
+          <div onClick={() => navigate("/cases?filter=approved")} className="cursor-pointer">
+            <StatCard
+              title="Approved Cases"
+              value="32"
+              icon={CheckCircle}
+              trend="+8% from last month"
+              trendUp={true}
+            />
+          </div>
+          <div onClick={() => navigate("/cases?filter=pending")} className="cursor-pointer">
+            <StatCard
+              title="Pending Review"
+              value="12"
+              icon={Clock}
+              trend="-5% from last month"
+              trendUp={false}
+            />
+          </div>
+          <div onClick={() => navigate("/cases?filter=urgent")} className="cursor-pointer">
+            <StatCard
+              title="Urgent Cases"
+              value="4"
+              icon={AlertCircle}
+              trend="2 due this week"
+            />
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -62,7 +73,8 @@ const Dashboard = () => {
                 {recentCases.map((case_) => (
                   <div
                     key={case_.id}
-                    className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                    onClick={() => navigate(`/case/${case_.id}`)}
+                    className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors cursor-pointer"
                   >
                     <div>
                       <p className="font-medium text-sm text-foreground">{case_.title}</p>
