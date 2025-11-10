@@ -1,6 +1,7 @@
 import { Scale } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "@/lib/utils";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Navbar = () => {
   const location = useLocation();
@@ -35,6 +36,7 @@ const Navbar = () => {
             >
               New Case
             </Link>
+            <ThemeToggle />
           </div>
         </div>
       </div>
