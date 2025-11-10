@@ -2,6 +2,7 @@ import { FileText, CheckCircle, Clock, AlertCircle, TrendingUp } from "lucide-re
 import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import StatCard from "@/components/StatCard";
+import { DashboardSearch } from "@/components/DashboardSearch";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const Dashboard = () => {
@@ -23,6 +24,8 @@ const Dashboard = () => {
           <h1 className="text-3xl font-bold text-foreground mb-2">Dashboard</h1>
           <p className="text-muted-foreground">Overview of your legal case management</p>
         </div>
+
+        <DashboardSearch />
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div onClick={() => navigate("/cases?filter=total")} className="cursor-pointer">
