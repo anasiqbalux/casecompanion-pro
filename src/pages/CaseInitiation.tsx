@@ -18,6 +18,50 @@ import { toast } from "sonner";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 
+// Mock data for case subjects with auto-fill values
+const caseSubjects = {
+  "Employment Dispute": {
+    group: "Human Resources",
+    division: "Labor Relations",
+    initiatedBy: "HR Manager",
+    unit: "Legal Compliance",
+    serviceType: "Dispute Resolution",
+    referencePrefix: "EMP"
+  },
+  "Contract Breach": {
+    group: "Commercial",
+    division: "Contract Management",
+    initiatedBy: "Contract Manager",
+    unit: "Commercial Legal",
+    serviceType: "Contract Review",
+    referencePrefix: "CNT"
+  },
+  "Intellectual Property": {
+    group: "Corporate",
+    division: "IP & Trademarks",
+    initiatedBy: "IP Manager",
+    unit: "IP Legal Unit",
+    serviceType: "IP Protection",
+    referencePrefix: "IPR"
+  },
+  "Regulatory Compliance": {
+    group: "Compliance",
+    division: "Regulatory Affairs",
+    initiatedBy: "Compliance Officer",
+    unit: "Regulatory Legal",
+    serviceType: "Compliance Review",
+    referencePrefix: "REG"
+  },
+  "Corporate Litigation": {
+    group: "Litigation",
+    division: "Corporate Affairs",
+    initiatedBy: "Legal Counsel",
+    unit: "Litigation Unit",
+    serviceType: "Litigation Support",
+    referencePrefix: "LIT"
+  }
+};
+
 const CaseInitiation = () => {
   const navigate = useNavigate();
   const [dateInitiated, setDateInitiated] = useState<Date>();
@@ -60,6 +104,31 @@ const CaseInitiation = () => {
 
   const handleInputChange = (field: string, value: string) => {
     setCaseData({ ...caseData, [field]: value });
+  };
+
+  const handleCaseSubjectChange = (subject: string) => {
+    const autoFillData = caseSubjects[subject as keyof typeof caseSubjects];
+    if (autoFillData) {
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const day = String(today.getDate()).padStart(2, '0');
+      const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      const generatedReference = `${autoFillData.referencePrefix}-${year}${month}${day}-${randomNum}`;
+      
+      setDateInitiated(today);
+      setCaseData({
+        ...caseData,
+        caseSubject: subject,
+        dateInitiated: today.toISOString().split('T')[0],
+        referenceNumber: generatedReference,
+        group: autoFillData.group,
+        division: autoFillData.division,
+        initiatedBy: autoFillData.initiatedBy,
+        unit: autoFillData.unit,
+        serviceType: autoFillData.serviceType,
+      });
+    }
   };
 
   const handleReview = () => {
@@ -147,6 +216,22 @@ const CaseInitiation = () => {
               </TabsList>
 
               <TabsContent value="details" className="space-y-4">
+                <div className="space-y-2 mb-6">
+                  <Label htmlFor="caseSubject">Case Subject</Label>
+                  <Select value={caseData.caseSubject} onValueChange={handleCaseSubjectChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select case subject" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Employment Dispute">Employment Dispute</SelectItem>
+                      <SelectItem value="Contract Breach">Contract Breach</SelectItem>
+                      <SelectItem value="Intellectual Property">Intellectual Property</SelectItem>
+                      <SelectItem value="Regulatory Compliance">Regulatory Compliance</SelectItem>
+                      <SelectItem value="Corporate Litigation">Corporate Litigation</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Date Initiated</Label>
@@ -289,15 +374,6 @@ const CaseInitiation = () => {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="caseSubject">Case Subject</Label>
-                  <Input
-                    id="caseSubject"
-                    placeholder="Enter case subject"
-                    value={caseData.caseSubject}
-                    onChange={(e) => handleInputChange("caseSubject", e.target.value)}
-                  />
                 </div>
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
