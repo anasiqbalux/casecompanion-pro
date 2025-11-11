@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import CaseInitiation from "./pages/CaseInitiation";
 import CasesList from "./pages/CasesList";
 import CaseDetails from "./pages/CaseDetails";
+import Notifications from "./pages/Notifications";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
                 <Route path="/case-initiation" element={<CaseInitiation />} />
                 <Route path="/cases" element={<CasesList />} />
                 <Route path="/case/:id" element={<CaseDetails />} />
+                <Route path="/notifications" element={<Notifications />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>

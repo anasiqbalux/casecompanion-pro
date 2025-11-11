@@ -58,36 +58,6 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="border-b border-border">
-        <div className="flex items-center gap-3 px-3 py-4">
-          <Avatar className="h-10 w-10">
-            <AvatarFallback className="bg-primary text-primary-foreground">JD</AvatarFallback>
-          </Avatar>
-          {open && (
-            <div className="flex-1 min-w-0">
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <button className="flex items-center gap-2 w-full text-left hover:bg-accent/50 rounded-md px-2 py-1 transition-colors">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground truncate">John Doe</p>
-                      <p className="text-xs text-muted-foreground truncate">john.doe@company.com</p>
-                    </div>
-                    <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" />
-                  </button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link to="/profile" className="cursor-pointer">
-                      <User className="mr-2 h-4 w-4" />
-                      View Profile
-                    </Link>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
-          )}
-        </div>
-      </SidebarHeader>
 
       <SidebarContent>
         <SidebarGroup>

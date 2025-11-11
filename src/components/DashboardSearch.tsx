@@ -1,5 +1,8 @@
+import { useState } from "react";
 import { Search } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Select,
   SelectContent,
@@ -10,6 +13,22 @@ import {
 import { Card } from "@/components/ui/card";
 
 export function DashboardSearch() {
+  const navigate = useNavigate();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [priority, setPriority] = useState("all");
+  const [initiatedBy, setInitiatedBy] = useState("all");
+  const [status, setStatus] = useState("all");
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.append("q", searchQuery);
+    if (priority !== "all") params.append("priority", priority);
+    if (initiatedBy !== "all") params.append("initiatedBy", initiatedBy);
+    if (status !== "all") params.append("status", status);
+    
+    navigate(`/cases?${params.toString()}`);
+  };
+
   return (
     <Card className="p-6 mb-8">
       <div className="space-y-4">
@@ -19,11 +38,14 @@ export function DashboardSearch() {
             type="text"
             placeholder="Search by keywords, case ID, client name..."
             className="pl-10 h-12 text-base"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
           />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Select>
+          <Select value={priority} onValueChange={setPriority}>
             <SelectTrigger>
               <SelectValue placeholder="Filter by priority" />
             </SelectTrigger>
@@ -36,7 +58,7 @@ export function DashboardSearch() {
             </SelectContent>
           </Select>
 
-          <Select>
+          <Select value={initiatedBy} onValueChange={setInitiatedBy}>
             <SelectTrigger>
               <SelectValue placeholder="Initiated by" />
             </SelectTrigger>
@@ -49,7 +71,7 @@ export function DashboardSearch() {
             </SelectContent>
           </Select>
 
-          <Select>
+          <Select value={status} onValueChange={setStatus}>
             <SelectTrigger>
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -62,6 +84,13 @@ export function DashboardSearch() {
               <SelectItem value="rejected">Rejected</SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <div className="flex justify-end">
+          <Button onClick={handleSearch} size="lg" className="min-w-32">
+            <Search className="mr-2 h-4 w-4" />
+            Search
+          </Button>
         </div>
       </div>
     </Card>
